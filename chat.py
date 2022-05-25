@@ -57,7 +57,7 @@ class TkinterWindow(tk.Tk):
         self.textbox.delete(0,END)
 
 
-class Program:
+class Chat:
     def __init__(self, ip: str, port: int=8000):
         self.isrunning = True
         self.window = TkinterWindow()
@@ -104,5 +104,5 @@ class Program:
 NAME = input("Input your name: ")
 
 
-program = Program("127.0.0.1", 8000)
-program.window.mainloop()
+chat = Chat("127.0.0.1", 8000)
+chat.window.mainloop()
