@@ -73,5 +73,5 @@ class Program:
 NAME = "Michael"
 
 
-program = Program("127.0.0.1", 8001)
+program = Program("127.0.0.1", 8000)
 program.window.mainloop()
