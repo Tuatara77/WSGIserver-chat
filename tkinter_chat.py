@@ -4,6 +4,34 @@ from tkinter import END
 from client import Client
 from server import Server
 
+specials = {
+    " ": "|<SPACE>",
+    "¬": "|<NEGATION>",
+    "¦": "|<SPLITPIPE>",
+    "`": "|<BACKQUOTE>",
+    '"': "|<QUOTE>",
+    "£": "|<QUID>",
+    "$": "|<DOLLAR>",
+    "€": "|<EURO>",
+    "%": "|<PERCENT>",
+    "^": "|<HAT>",
+    "&": "|<AMPERSAND>",
+    "+": "|<PLUS>",
+    "=": "|<EQUALS>",
+    "[": "|<OPENSQUARE>",
+    "]": "|<CLOSESQUARE>",
+    "{": "|<OPENCURLY>",
+    "}": "|<CLOSECURLY>",
+    ":": "|<COLON>",
+    ";": "|<SEMI>",
+    "@": "|<AT>",
+    "#": "|<HASH>",
+    "/": "|<SLASH>",
+    "?": "|<QUESTION>",
+    ",": "|<COMMA>",
+    "\\": "|<BACKSLASH>"
+}
+
 STOPMESSAGE = "#64STOPorAng3"
 
 class TkinterWindow(tk.Tk):
@@ -17,10 +45,10 @@ class TkinterWindow(tk.Tk):
 
         self.messagebox.pack(expand=True)
         self.textbox.pack(expand=True)
-        
+
         self.messagebox['state'] = "disabled"
         self.textbox.focus()
-        
+
     def update(self, name, text):
         self.messagebox['state'] = "normal"
         self.messagebox.insert(END, chars=f"{name}:\n{text}\n\n")
@@ -38,10 +66,10 @@ class Program:
 
         self.serverthread = threading.Thread(target=self.serverstart, daemon=True)
         self.receiver = threading.Thread(target=self.receive, daemon=True)
-        
+
         self.serverthread.start()
         self.receiver.start()
-        
+
         self.window.textbox.bind("<Return>", self.sendevent)
 
     def receive(self):
@@ -53,9 +81,10 @@ class Program:
                 if info != previnfo:
                     previnfo = info
                     name, message = info.split("/")
+                    for special in specials: message = message.replace(specials[special], special)
                     self.window.update(name, message)
             except: pass
-    
+
     def send(self):
         msg = self.window.textbox.get()
         if msg == "EXIT":
@@ -64,14 +93,16 @@ class Program:
             self.client.send(NAME, STOPMESSAGE)
             self.server.stop()
             self.serverthread.join()
-        else: self.client.send(NAME, msg)
+        else:
+            for special in specials: msg = msg.replace(special, specials[special])
+            self.client.send(NAME, msg)
 
     def sendevent(self, event=None): self.send()
     def serverstart(self): self.server.start()
 
 
-NAME = "Michael"
+NAME = input("Input your name: ")
 
 
-program = Program("127.0.0.1", 8000)
+program = Program("127.0.0.1", 8007)
 program.window.mainloop()
