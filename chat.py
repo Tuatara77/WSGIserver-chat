@@ -104,5 +104,5 @@ class Program:
 NAME = input("Input your name: ")
 
 
-program = Program("127.0.0.1", 8007)
+program = Program("127.0.0.1", 8000)
 program.window.mainloop()
