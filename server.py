@@ -3,7 +3,7 @@ import wsgiserver
 
 class Server:
     def __init__(self, port:int=8000):
-        self.sep = "|<SEPARATOR>"
+        self.sep = "|<SEPARATOR>|"
         self.paths = wsgiserver.WSGIPathInfoDispatcher({
             "/": self._main,
             "/send": self._receive,
