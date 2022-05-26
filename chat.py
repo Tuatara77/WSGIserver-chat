@@ -106,7 +106,7 @@ class Chat:
     def serverstart(self): self.server.start()
 
 
-NAME = "Michael"
+NAME = input("Input your name: ")
 
 
 chat = Chat("127.0.0.1", 8000)
