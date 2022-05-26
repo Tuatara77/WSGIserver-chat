@@ -1,4 +1,5 @@
 import threading
+import socket
 import tkinter as tk
 from tkinter import END
 from client import Client
@@ -67,7 +68,8 @@ class Chat:
         self.serverthread = threading.Thread(target=self.serverstart, daemon=True)
         self.receiver = threading.Thread(target=self.receive, daemon=True)
 
-        self.serverthread.start()
+        if ip == socket.gethostbyname(socket.gethostname()) or ip == "localhost" or ip[0:3] == "127":
+            self.serverthread.start()
         self.receiver.start()
 
         self.window.textbox.bind("<Return>", self.sendevent)
