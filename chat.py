@@ -6,39 +6,40 @@ from client import Client
 from server import Server
 
 specials = {
-    " ": "|<SPACE>",
-    "¬": "|<NEGATION>",
-    "¦": "|<SPLITPIPE>",
-    "`": "|<BACKQUOTE>",
-    '"': "|<QUOTE>",
-    "£": "|<QUID>",
-    "$": "|<DOLLAR>",
-    "€": "|<EURO>",
-    "%": "|<PERCENT>",
-    "^": "|<HAT>",
-    "&": "|<AMPERSAND>",
-    "+": "|<PLUS>",
-    "=": "|<EQUALS>",
-    "[": "|<OPENSQUARE>",
-    "]": "|<CLOSESQUARE>",
-    "{": "|<OPENCURLY>",
-    "}": "|<CLOSECURLY>",
-    ":": "|<COLON>",
-    ";": "|<SEMI>",
-    "@": "|<AT>",
-    "#": "|<HASH>",
-    "/": "|<SLASH>",
-    "?": "|<QUESTION>",
-    ",": "|<COMMA>",
-    "\\": "|<BACKSLASH>"
+    " ": "|<SPACE>|",
+    "¬": "|<NEGATION>|",
+    "¦": "|<SPLITPIPE>|",
+    "`": "|<BACKQUOTE>|",
+    '"': "|<QUOTE>|",
+    "£": "|<QUID>|",
+    "$": "|<DOLLAR>|",
+    "€": "|<EURO>|",
+    "%": "|<PERCENT>|",
+    "^": "|<CARAT>|",
+    "&": "|<AMPERSAND>|",
+    "+": "|<PLUS>|",
+    "=": "|<EQUALS>|",
+    "[": "|<OPENSQUARE>|",
+    "]": "|<CLOSESQUARE>|",
+    "{": "|<OPENCURLY>|",
+    "}": "|<CLOSECURLY>|",
+    ":": "|<COLON>|",
+    ";": "|<SEMI>|",
+    "@": "|<AT>|",
+    "#": "|<HASH>|",
+    "/": "|<SLASH>|",
+    "?": "|<QUESTION>|",
+    ",": "|<COMMA>|",
+    "\\": "|<BACKSLASH|>"
 }
 
+SEPARATOR = "|<SEPARATOR>|"
 STOPMESSAGE = "#64STOPorAng3"
 
 class TkinterWindow(tk.Tk):
     def __init__(self, window_x:int=640, window_y:int=512, offset_x=0, offset_y=0):
         super().__init__()
-        self.title("Messagebox")
+        self.title("Chat")
         self.geometry(f"{window_x}x{window_y}+{offset_x}+{offset_y}")
 
         self.messagebox = tk.Text(self, width=68, font=0)
@@ -75,16 +76,18 @@ class Chat:
         self.window.textbox.bind("<Return>", self.sendevent)
 
     def receive(self):
-        info = ""
-        previnfo = "l"
+        info = []
+        previnfo = []
         while self.isrunning:
             try:
-                info = self.client.request()
+                info = self.client.request().split(SEPARATOR)[:-1]
                 if info != previnfo:
+                    newdata = [data for data in info if data not in previnfo]
                     previnfo = info
-                    name, message = info.split("/")
-                    for special in specials: message = message.replace(specials[special], special)
-                    self.window.update(name, message)
+                    for newthing in newdata:
+                        name, message = newthing.split("/")
+                        for special in specials: message = message.replace(specials[special], special)
+                        self.window.update(name, message)
             except: pass
 
     def send(self):
@@ -103,7 +106,7 @@ class Chat:
     def serverstart(self): self.server.start()
 
 
-NAME = input("Input your name: ")
+NAME = "Michael"
 
 
 chat = Chat("127.0.0.1", 8000)
