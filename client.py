@@ -1,7 +1,7 @@
 import http.client
 
 class Client:
-    def __init__(self, server_ip:str, server_port:int=80):
+    def __init__(self, server_ip:str, server_port:int=8000):
         self.ip = server_ip
         self.port = server_port
 
