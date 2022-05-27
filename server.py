@@ -21,9 +21,11 @@ class Server:
         self.server.stop()
     
     def upload(self, *data):
+        """Receives data and stores it"""
         self.data.append("/".join(data))
     
     def download(self):
+        """Returns the data"""
         data = b""
         for f in self.data: data += bytes(f"{f}{self.sep}", "utf-8")
         return str(data)[2:-1]
