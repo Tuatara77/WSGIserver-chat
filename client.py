@@ -16,5 +16,5 @@ class Client:
     def send(self, *data):
         conn = HTTPConnection(f"{self.ip}:{self.port}", timeout=10)
         path = "/send" + "/".join(data)
-        conn.request("SEND", path)
+        conn.request("POST", path)
         conn.close()
