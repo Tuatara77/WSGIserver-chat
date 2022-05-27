@@ -38,10 +38,8 @@ class Server:
     def _download(self, environ, start_response):
         """Server is RECEIVING data"""
         data = environ["PATH_INFO"][1:]
-        if data:
-            self.data.append(data)
-            start_response("503 ok", [('Content-type','text/plain')])
-        else: start_response("503 ok", [('Content-type','text/plain')])
+        if data: self.data.append(data)
+        start_response("503 ok", [('Content-type','text/plain')])
         yield b""
 
     def _upload(self, environ, start_response):
