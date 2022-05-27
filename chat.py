@@ -1,5 +1,5 @@
-import threading
 import socket
+import threading
 import tkinter as tk
 from tkinter import END
 from client import Client
@@ -62,6 +62,7 @@ class TkinterWindow(tk.Tk):
 class Chat:
     def __init__(self, ip: str, port: int=8000):
         self.isrunning = True
+        self.host = False
         self.window = TkinterWindow()
         self.server = Server(port)
         self.client = Client(ip, port)
@@ -69,8 +70,9 @@ class Chat:
         self.serverthread = threading.Thread(target=self.serverstart, daemon=True)
         self.receiver = threading.Thread(target=self.receive, daemon=True)
 
-        if ip == socket.gethostbyname(socket.gethostname()) or ip == "localhost" or ip[0:3] == "127":
+        if ip == socket.gethostbyname(socket.gethostname()) or ip == "localhost" or ip[0:3] == "127" or ip == "0.0.0.0":
             self.serverthread.start()
+            self.host = True
         self.receiver.start()
 
         self.window.textbox.bind("<Return>", self.sendevent)
@@ -78,29 +80,45 @@ class Chat:
     def receive(self):
         info = []
         previnfo = []
-        while self.isrunning:
-            try:
-                info = self.client.request().split(SEPARATOR)[:-1]
-                if info != previnfo:
-                    newdata = [data for data in info if data not in previnfo]
-                    previnfo = info
-                    for newthing in newdata:
-                        name, message = newthing.split("/")
-                        for special in specials: message = message.replace(specials[special], special)
-                        self.window.update(name, message)
-            except: pass
+        if self.host:
+            while self.isrunning:
+                try:
+                    info = self.server.download().split(SEPARATOR)[:-1]
+                    if info != previnfo:
+                        newdata = info[len(previnfo):]
+                        previnfo = info
+                        for newthing in newdata:
+                            name, message = newthing.split("/")
+                            for special in specials: message = message.replace(specials[special], special)
+                            self.window.update(name, message)
+                except: pass
+        else:
+            while self.isrunning:
+                try:
+                    info = self.client.request().split(SEPARATOR)[:-1]
+                    if info != previnfo:
+                        newdata = info[len(previnfo):]
+                        previnfo = info
+                        for newthing in newdata:
+                            name, message = newthing.split("/")
+                            for special in specials: message = message.replace(specials[special], special)
+                            self.window.update(name, message)
+                except: pass
 
     def send(self):
         msg = self.window.textbox.get()
         if msg == "EXIT":
             self.isrunning = False
             self.window.destroy()
-            self.client.send(NAME, STOPMESSAGE)
-            self.server.stop()
-            self.serverthread.join()
+            if self.host: 
+                self.server.upload(NAME, STOPMESSAGE)
+                # self.server.stop()
+                self.serverthread.join()
+            else: self.client.send(NAME, STOPMESSAGE)
         else:
             for special in specials: msg = msg.replace(special, specials[special])
-            self.client.send(NAME, msg)
+            if self.host: self.server.upload(NAME, msg)
+            else: self.client.send(NAME, msg)
 
     def sendevent(self, event=None): self.send()
     def serverstart(self): self.server.start()
